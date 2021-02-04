@@ -31,10 +31,11 @@ const App = () => {
 	return <>
 		<h1>Strangers Things</h1>
 		{user.username && <div>Hello {user.username}</div> }
-		<Link to='/profile'>User profile</Link>
+		<Link to='/profile'>my account</Link>
 		<Link to='/login'>Log In</Link>
 		<Link to='/register'>Register Account</Link>
 		<Link to='/'>Home</Link>
+		<Link to='/createpost'>create a posting</Link>
 		
 		<Route path='/login'>
 			<AccountForm type={'login'} setToken={setToken} setUser={setUser}/>
@@ -46,8 +47,10 @@ const App = () => {
 			<Profile user={user}/>
 		</Route>
 		<Route exact path='/'>
+			<Posts token={token} posts={posts} setPosts={setPosts}/>
+		</Route>
+		<Route path='/createpost'>
 			<PostsAdd token={token} posts={posts} setPosts={setPosts}/>
-			<Posts posts={posts} setPosts={setPosts}/>
 		</Route>
 		{console.log(token)}
 	</>
