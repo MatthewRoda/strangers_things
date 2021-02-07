@@ -13,46 +13,59 @@ const App = () => {
 	const [token, setToken] = useState('');
 	const [user, setUser] = useState({});
 	const [posts, setPosts] = useState([]);
-
-	//this keeps breaking the user state by setting user to null, 
-	/*useEffect( async ()=> {
-		const response = await fetch('https://strangers-things.herokuapp.com/api/2010-CPU-RM-WEB-PT/users/me', {
-			method: 'GET',
-			headers: {
-				'Authorization': `Bearer ${token}`
-			}
-		});
-		const data = await response.json();
-		if (data.success === true){
-			setUser(data.data.user)
-		}
-	}, [token] );*/
+	const [searchTerm, setSearchTerm] = useState('');
+	const [editingPost, setEditingPost] = useState({});
 	
+	const fetchObj = {
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+			'Authorization': token ? `Bearer ${token}` : null
+		}
+	};
+	const fetchAndSet = async () => {
+		try{
+			const response = await fetch('https://strangers-things.herokuapp.com/api/2010-CPU-RM-WEB-PT/posts', fetchObj);
+			const {data} = await response.json();
+			setPosts(data.posts);
+		}
+		catch (error){
+			console.error(error);
+		}
+	};
+
 	return <>
-		<h1>Strangers Things</h1>
-		{user.username && <div>Hello {user.username}</div> }
-		<Link to='/profile'>my account</Link>
-		<Link to='/login'>Log In</Link>
-		<Link to='/register'>Register Account</Link>
-		<Link to='/'>Home</Link>
-		<Link to='/createpost'>create a posting</Link>
-		
-		<Route path='/login'>
-			<AccountForm type={'login'} setToken={setToken} setUser={setUser}/>
-		</Route>
-		<Route path='/register'>
-			<AccountForm type={'register'} setToken={setToken} setUser={setUser}/>
-		</Route>
-		<Route path='/profile'>
-			<Profile user={user}/>
-		</Route>
-		<Route exact path='/'>
-			<Posts token={token} posts={posts} setPosts={setPosts}/>
-		</Route>
-		<Route path='/createpost'>
-			<PostsAdd token={token} posts={posts} setPosts={setPosts}/>
-		</Route>
-		{console.log(token)}
+		<header>
+			<Link to='/'>Home</Link>
+			<Link to='/login'>Log In/Create Account</Link>
+			<Link to='/profile'>my account</Link>
+			<Link to='/createpost'>create a posting</Link>
+		</header>
+		<div className='bulk'>
+			
+			<Route exact path='/'>
+			<h1>Strangers Things</h1>
+			{user.username && <div>Hello {user.username}</div> }
+				<h2>Search:</h2>
+				<input type='text' value={searchTerm} onChange={(ev) => setSearchTerm(ev.target.value)} placeholder="search strangers things"></input>
+				<Posts fetchAndSet={fetchAndSet} setEditingPost={setEditingPost}searchTerm={searchTerm} setSearchTerm={setSearchTerm} token={token} posts={posts} setPosts={setPosts}/>
+			</Route>
+			
+			<Route path='/createpost'>
+				<PostsAdd fetchAndSet={fetchAndSet} setEditingPost={setEditingPost} editingPost={editingPost}token={token} posts={posts} setPosts={setPosts}/>
+			</Route>
+			
+			<Route path='/login'>
+				<AccountForm type={'login'} setToken={setToken} setUser={setUser}/>
+			</Route>
+			
+			<Route path='/register'>
+				<AccountForm type={'register'} setToken={setToken} setUser={setUser}/>
+			</Route>
+			<Route path='/profile'>
+				<Profile user={user}/>
+			</Route>
+		</div>
 	</>
 }
 

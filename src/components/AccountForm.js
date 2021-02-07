@@ -40,18 +40,22 @@ const AccountForm = ({type, setToken, setUser}) => {
 			setPassword('');
 			history.push('/')
 		}
-
+		else{
+			window.alert('login failed');
+		}
 	}
 	
-	return <>
+	return <div className='accountform'>
 		<h2>{title}</h2>
 		<form onSubmit={handleSubmit}>
 			<input type='text' value={username} onChange={(ev) => setUsername(ev.target.value)} placeholder="username"></input>
+			<br />
 			<input type='password' value={password} onChange={(ev) => setPassword(ev.target.value)} placeholder="password"></input>
+			<br />
 			<button type="submit">{title}</button>
 		</form>
 		<Link to={`/${oppositeType}`}>{oppositeTitle}</Link>
-	</>
+	</div>
 }
 
 export default AccountForm;
